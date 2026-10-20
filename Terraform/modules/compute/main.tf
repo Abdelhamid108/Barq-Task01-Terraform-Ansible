@@ -15,7 +15,7 @@ resource "aws_key_pair" "deployer" {
 resource "aws_instance" "app" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
-  subnet_id              = var.subnet_id
+  subnet_id              = var.public_subnet_id
   vpc_security_group_ids = [var.app_sg_id]
   key_name               = aws_key_pair.deployer.key_name
 
@@ -29,7 +29,7 @@ resource "aws_instance" "app" {
 
 resource "aws_instance" "db" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.instance_type
+  instance_type          = var.private_instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [var.db_sg_id]
   key_name               = aws_key_pair.deployer.key_name
