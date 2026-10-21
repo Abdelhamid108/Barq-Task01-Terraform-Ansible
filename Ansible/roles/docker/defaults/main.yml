@@ -5,6 +5,14 @@
 docker_edition: 'ce'
 docker_apt_release_channel: 'stable'
 
+# Prerequisite packages required before adding Docker GPG repo and Git
+docker_prerequisite_packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - apt-transport-https
+  - git
+
 # package state for Docker installation (present/absent)
 docker_package_state: present
 

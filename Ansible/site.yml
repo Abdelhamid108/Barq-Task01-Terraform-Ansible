@@ -8,17 +8,12 @@
         delay: 5
         timeout: 300
 
-- name: setup and install common packages
-  hosts: all
-  become: yes
-  roles:
-    - common
-
 - name: install docker
   hosts: all
   become: yes
   roles:
     - docker
+
 
 - name: deploy database
   hosts: db
