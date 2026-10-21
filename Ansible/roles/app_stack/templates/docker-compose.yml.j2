@@ -5,11 +5,7 @@ services:
     restart: unless-stopped
     expose:
       - "{{ app_port }}"
-    environment:
-      SPRING_PROFILES_ACTIVE: postgres
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ db_host }}:{{ db_port }}/{{ db_name }}"
-      SPRING_DATASOURCE_USERNAME: "{{ db_user }}"
-      SPRING_DATASOURCE_PASSWORD: "{{ db_password }}"
+    env_file: .env   
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:{{ app_port }} || exit 1"]
       interval: 10s
@@ -18,7 +14,8 @@ services:
       start_period: 20s
 
   nginx:
-    image: nginx:1.25-alpine
+    image: "{{ nginx_image }}"
+
     container_name: nginx_proxy
     restart: unless-stopped
     ports:

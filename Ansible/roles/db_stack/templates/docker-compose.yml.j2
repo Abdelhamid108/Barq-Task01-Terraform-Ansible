@@ -3,16 +3,15 @@ services:
     image: postgres:16-alpine
     container_name: postgres_db
     restart: unless-stopped
-    environment:
-      POSTGRES_DB: "{{ db_name }}"
-      POSTGRES_USER: "{{ db_user }}"
-      POSTGRES_PASSWORD: "{{ db_password }}"
+    env_file: .env 
     ports:
       - "{{ db_port }}:5432"
+
     volumes:
       - "{{ db_data_dir }}:/var/lib/postgresql/data"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U {{ db_user }} -d {{ db_name }}"]
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres']
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 20s
