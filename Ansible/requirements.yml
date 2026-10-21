@@ -1,1 +1,5 @@
+---
 # Declare external Ansible collections and roles required by this project here.
+collections:
+  - name: community.docker
+    version: ">=3.10.0"
