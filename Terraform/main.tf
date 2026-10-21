@@ -24,17 +24,20 @@ module "compute" {
 
 # Dynamic Ansible Inventory Generator
 resource "local_file" "ansible_inventory" {
-  filename = "${path.module}/../ansible/inventory/hosts.ini"
+  filename = "${path.module}/../Ansible/inventory/hosts.ini"
   content  = <<-EOT
-    [app_server]
+    [app]
     app01 ansible_host=${module.compute.app_instance_public_ip} private_ip=${module.compute.app_instance_private_ip}
 
-    [db_server]
-    db01 ansible_host=${module.compute.app_instance_public_ip} private_ip=${module.compute.db_instance_private_ip}
+    [db]
+    db01 ansible_host=${module.compute.db_instance_private_ip} private_ip=${module.compute.db_instance_private_ip}
 
     [all:vars]
     ansible_user=ubuntu
     ansible_ssh_private_key_file=${var.private_key_path}
     ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+    [db:vars]
+    ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh -i ${var.private_key_path} -W %h:%p -q ubuntu@${module.compute.app_instance_public_ip}"'
   EOT
 }
