@@ -12,3 +12,8 @@ output "db_instance_private_ip" {
   description = "Private IP address of the database instance"
   value       = aws_instance.db.private_ip
 }
+
+output "db_data_volume_id" {
+  value      = aws_ebs_volume.db_data.id
+  depends_on = [aws_volume_attachment.db_data]
+}

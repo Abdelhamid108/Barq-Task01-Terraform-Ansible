@@ -19,6 +19,10 @@ resource "aws_instance" "app" {
   vpc_security_group_ids = [var.app_sg_id]
   key_name               = aws_key_pair.deployer.key_name
 
+  metadata_options {
+    http_tokens = "required"
+  }
+
   root_block_device {
     volume_size = 12
     encrypted   = true
@@ -33,6 +37,10 @@ resource "aws_instance" "db" {
   subnet_id              = var.private_subnet_id
   vpc_security_group_ids = [var.db_sg_id]
   key_name               = aws_key_pair.deployer.key_name
+
+  metadata_options {
+    http_tokens = "required"
+  }
 
   root_block_device {
     volume_size = 12
@@ -54,4 +62,5 @@ resource "aws_volume_attachment" "db_data" {
   device_name = "/dev/sdf"
   volume_id   = aws_ebs_volume.db_data.id
   instance_id = aws_instance.db.id
+  stop_instance_before_detaching = true
 }

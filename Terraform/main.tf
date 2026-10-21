@@ -22,7 +22,11 @@ module "compute" {
   db_volume_gb      = var.db_volume_gb
 }
 
-# Dynamic Ansible Inventory Generator
+locals {
+  private_key = pathexpand(var.private_key_path)
+  ssh_opts    = "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+}
+
 resource "local_file" "ansible_inventory" {
   filename = "${path.module}/../Ansible/inventory/hosts.ini"
   content  = <<-EOT
@@ -30,14 +34,14 @@ resource "local_file" "ansible_inventory" {
     app01 ansible_host=${module.compute.app_instance_public_ip} private_ip=${module.compute.app_instance_private_ip}
 
     [db]
-    db01 ansible_host=${module.compute.db_instance_private_ip} private_ip=${module.compute.db_instance_private_ip}
+    db01 ansible_host=${module.compute.db_instance_private_ip} private_ip=${module.compute.db_instance_private_ip} data_volume_id=${module.compute.db_data_volume_id}
 
     [all:vars]
     ansible_user=ubuntu
-    ansible_ssh_private_key_file=${var.private_key_path}
-    ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+    ansible_ssh_private_key_file=${local.private_key}
+    ansible_ssh_common_args='${local.ssh_opts}'
 
     [db:vars]
-    ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh -i ${var.private_key_path} -W %h:%p -q ubuntu@${module.compute.app_instance_public_ip}"'
+    ansible_ssh_common_args='${local.ssh_opts} -o ProxyCommand="ssh -i ${local.private_key} ${local.ssh_opts} -W %h:%p -q ubuntu@${module.compute.app_instance_public_ip}"'
   EOT
 }
