@@ -11,13 +11,19 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
-variable "subnet_cidr" {
-  description = "CIDR block for the public subnet"
+variable "app_subnet_cidr" {
+  description = "CIDR block for the public App subnet"
   type        = string
   default     = "10.0.1.0/24"
 }
 
+variable "db_subnet_cidr" {
+  description = "CIDR block for the private DB subnet"
+  type        = string
+  default     = "10.0.2.0/24"
+}
+
 variable "ssh_allowed_cidr" {
-  description = "Trusted CIDR block allowed to SSH into hosts"
+  description = "Trusted CIDR block allowed to SSH into the App host"
   type        = string
 }
