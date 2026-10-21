@@ -7,6 +7,11 @@ db_user: "{{ vault_db_user }}"
 db_password: "{{ vault_db_password }}"
 db_port: 5432
 
+# PostgreSQL admin user and password (mapped from Ansible Vault)
+pg_superuser: postgres_admin
+pg_superuser_password: "{{ vault_pg_superuser_password | default(db_password) }}"
+
+
 # DB Backup parameters mapped to database credentials & container
 db_admin_user: "{{ db_user }}"
 app_db_name: "{{ db_name }}"

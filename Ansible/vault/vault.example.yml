@@ -6,3 +6,5 @@
 vault_db_name: petclinic
 vault_db_user: petclinic
 vault_db_password: petclinic_password
+vault_pg_superuser_password: postgres_admin_password
+
