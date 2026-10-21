@@ -65,9 +65,35 @@ resource "aws_route_table_association" "app_public" {
   route_table_id = aws_route_table.public.id
 }
 
-# Private Route Table for DB Subnet (Internal Traffic Only)
+resource "aws_eip" "nat" {
+  domain = "vpc"
+
+  tags = {
+    Name      = "${var.project_name}-nat-eip"
+    ManagedBy = "terraform"
+  }
+}
+
+resource "aws_nat_gateway" "main" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.app.id
+
+  tags = {
+    Name      = "${var.project_name}-nat-gw"
+    ManagedBy = "terraform"
+  }
+
+  depends_on = [aws_internet_gateway.main]
+}
+
+# Private Route Table for DB Subnet (Outbound via NAT Gateway)
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.main.id
+  }
 
   tags = {
     Name      = "${var.project_name}-private-rt"
@@ -124,13 +150,13 @@ resource "aws_vpc_security_group_ingress_rule" "app_ssh" {
   to_port           = 22
 }
 
-# DB SG: Allow SSH (22) only from trusted CIDR
+# DB SG: Allow SSH (22) from the App Host (Jump Server / Bastion)
 resource "aws_vpc_security_group_ingress_rule" "db_ssh" {
-  security_group_id = aws_security_group.db.id
-  cidr_ipv4         = var.ssh_allowed_cidr
-  ip_protocol       = "tcp"
-  from_port         = 22
-  to_port           = 22
+  security_group_id            = aws_security_group.db.id
+  referenced_security_group_id = aws_security_group.app.id
+  ip_protocol                  = "tcp"
+  from_port                    = 22
+  to_port                      = 22
 }
 
 # DB SG: Allow PostgreSQL (5432) ONLY from the App Security Group

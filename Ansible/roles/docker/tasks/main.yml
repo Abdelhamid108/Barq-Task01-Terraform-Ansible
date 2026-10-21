@@ -33,13 +33,8 @@
   ansible.builtin.package:
     name: "{{ docker_packages }}"
     state: "{{ docker_package_state }}"
-  notify: start_enable_docker
+  notify: docker start and enable
 
-- name: Ensure Docker is enabled and running
-  ansible.builtin.service:
-    name: docker
-    state: "{{ docker_service_state }}"
-    enabled: true
 
 # Add the current ansible user to the 'docker' group
 # This allows running docker commands without 'sudo'
