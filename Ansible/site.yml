@@ -1,5 +1,13 @@
 # Main playbook: define target hosts and include the roles that configure them.
 ---
+- name: wait for servers to accept SSH
+  hosts: all
+  gather_facts: false
+  tasks:
+    - ansible.builtin.wait_for_connection:
+        delay: 5
+        timeout: 300
+
 - name: setup and install common packages
   hosts: all
   become: yes
