@@ -1,7 +1,7 @@
 ---
-db_name: petclinic
-db_user: petclinic
-db_password: petclinic_password
+db_name: "{{ vault_db_name | default('petclinic') }}"
+db_user: "{{ vault_db_user | default('petclinic') }}"
+db_password: "{{ vault_db_password | default('petclinic_password') }}"
 db_port: 5432
 db_data_dir: /data/postgres
 db_stack_dir: /opt/db_stack
