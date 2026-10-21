@@ -150,13 +150,13 @@ resource "aws_vpc_security_group_ingress_rule" "app_ssh" {
   to_port           = 22
 }
 
-# DB SG: Allow SSH (22) only from trusted CIDR
+# DB SG: Allow SSH (22) from the App Host (Jump Server / Bastion)
 resource "aws_vpc_security_group_ingress_rule" "db_ssh" {
-  security_group_id = aws_security_group.db.id
-  cidr_ipv4         = var.ssh_allowed_cidr
-  ip_protocol       = "tcp"
-  from_port         = 22
-  to_port           = 22
+  security_group_id            = aws_security_group.db.id
+  referenced_security_group_id = aws_security_group.app.id
+  ip_protocol                  = "tcp"
+  from_port                    = 22
+  to_port                      = 22
 }
 
 # DB SG: Allow PostgreSQL (5432) ONLY from the App Security Group
