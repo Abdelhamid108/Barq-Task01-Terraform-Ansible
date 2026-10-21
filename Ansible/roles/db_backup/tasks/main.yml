@@ -22,9 +22,11 @@
 - name: Backup and restore scripts
   ansible.builtin.template:
     src: "{{ item }}.j2"
-    dest: "/usr/local/bin/{{ item }}"
+    dest: "/usr/local/sbin/{{ item }}"
     mode: "0750"
-  loop: [pg-backup.sh, pg-restore.sh]
+  loop:
+    - pg_backup.sh
+    - pg_restore.sh
 
 - name: Schedule the PostgreSQL backup
   ansible.builtin.cron:
