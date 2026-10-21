@@ -1,13 +1,13 @@
 services:
   app:
-    image: {{ app_image }}
+    image: "{{ app_image }}"
     container_name: spring_petclinic_app
     restart: unless-stopped
     expose:
       - "{{ app_port }}"
     environment:
       SPRING_PROFILES_ACTIVE: postgres
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ db_host }}:5432/{{ db_name }}"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ db_host }}:{{ db_port }}/{{ db_name }}"
       SPRING_DATASOURCE_USERNAME: "{{ db_user }}"
       SPRING_DATASOURCE_PASSWORD: "{{ db_password }}"
     healthcheck:
@@ -26,7 +26,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost/health || exit 1"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1/health || exit 1"]
       interval: 10s
       timeout: 3s
       retries: 3
