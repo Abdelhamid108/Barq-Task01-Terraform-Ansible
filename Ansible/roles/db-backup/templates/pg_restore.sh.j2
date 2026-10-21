@@ -3,7 +3,7 @@ set -euo pipefail
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-CONTAINER_NAME="postgres"
+CONTAINER_NAME="{{ db_container_name }}"
 POSTGRES_USER="{{ db_admin_user }}"
 DATABASE_NAME="{{ app_db_name }}"
 BACKUP_DIR="{{ backup_dir }}"
@@ -52,7 +52,7 @@ restore_backup() {
 
     log "Restoring '$BACKUP_FILE' into database '$DATABASE_NAME'..."
     docker exec -i "$CONTAINER_NAME" pg_restore -U "$POSTGRES_USER" -d "$DATABASE_NAME" \
-        --clean --if-exists --no-owner < "$BACKUP_FILE" 2>> "$LOG_FILE" \
+        --clean --if-exists --no-owner --exit-on-error < "$BACKUP_FILE" 2>> "$LOG_FILE" \
         || error "pg_restore failed."
 
     log "Restore completed."
