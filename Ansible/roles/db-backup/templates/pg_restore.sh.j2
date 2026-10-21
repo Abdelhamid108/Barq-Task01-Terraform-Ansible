@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+CONTAINER_NAME="{{ db_container_name }}"
+POSTGRES_USER="{{ db_admin_user }}"
+DATABASE_NAME="{{ app_db_name }}"
+BACKUP_DIR="{{ backup_dir }}"
+LOG_FILE="${BACKUP_DIR}/restore.log"
+
+SKIP_CONFIRM="no"
+BACKUP_FILE=""
+
+mkdir -p "$BACKUP_DIR"
+
+log() {
+    echo "[INFO] $(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+}
+
+error() {
+    echo "[ERROR] $(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE" >&2
+    exit 1
+}
+
+usage() {
+    echo "Usage: $0 [--yes] /path/to/file.dump" >&2
+    exit 1
+}
+
+parse_args() {
+    if [ "${1:-}" = "--yes" ]; then
+        SKIP_CONFIRM="yes"
+        shift
+    fi
+
+    BACKUP_FILE="${1:-}"
+    [ -n "$BACKUP_FILE" ] || usage
+}
+
+check_container() {
+    [ -n "$(docker ps -q -f "name=^${CONTAINER_NAME}$" -f status=running)" ] \
+        || error "Container '$CONTAINER_NAME' is not running."
+}
+
+restore_backup() {
+    [ -f "$BACKUP_FILE" ] || error "Backup file '$BACKUP_FILE' not found."
+
+    # Make sure the file is a valid dump before touching live data
+    docker exec -i "$CONTAINER_NAME" pg_restore --list < "$BACKUP_FILE" > /dev/null 2>> "$LOG_FILE" \
+        || error "'$BACKUP_FILE' is not a valid pg_dump custom-format file."
+
+    log "Restoring '$BACKUP_FILE' into database '$DATABASE_NAME'..."
+    docker exec -i "$CONTAINER_NAME" pg_restore -U "$POSTGRES_USER" -d "$DATABASE_NAME" \
+        --clean --if-exists --no-owner --exit-on-error < "$BACKUP_FILE" 2>> "$LOG_FILE" \
+        || error "pg_restore failed."
+
+    log "Restore completed."
+}
+
+main() {
+    parse_args "$@"
+    check_container
+
+    if [ "$SKIP_CONFIRM" != "yes" ]; then
+        local answer
+        read -r -p "This replaces data in '${DATABASE_NAME}'. Type YES to continue: " answer
+        [ "$answer" = "YES" ] || error "Aborted."
+    fi
+
+    restore_backup
+}
+
+main "$@"

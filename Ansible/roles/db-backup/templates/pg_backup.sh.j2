@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# cron runs with a minimal PATH
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+CONTAINER_NAME="{{ db_container_name }}"
+POSTGRES_USER="{{ db_admin_user }}"
+DATABASE_NAME="{{ app_db_name }}"
+BACKUP_DIR="{{ backup_dir }}"
+RETENTION_DAYS="{{ backup_retention_days }}"
+LOG_FILE="${BACKUP_DIR}/backup.log"
+
+mkdir -p "$BACKUP_DIR"
+
+log() {
+    echo "[INFO] $(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+}
+
+error() {
+    echo "[ERROR] $(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE" >&2
+    exit 1
+}
+
+check_container() {
+    [ -n "$(docker ps -q -f "name=^${CONTAINER_NAME}$" -f status=running)" ] \
+        || error "Container '$CONTAINER_NAME' is not running."
+}
+
+create_backup() {
+    local stamp file
+    stamp="$(date +%Y%m%d-%H%M%S)"
+    file="${BACKUP_DIR}/${DATABASE_NAME}-${stamp}.dump"
+
+    log "Creating backup for database '$DATABASE_NAME' in container '$CONTAINER_NAME'..."
+
+    # Dump to a temp file first so a failed run never leaves a broken backup.
+    if ! docker exec "$CONTAINER_NAME" pg_dump -U "$POSTGRES_USER" -d "$DATABASE_NAME" -Fc > "${file}.tmp" 2>> "$LOG_FILE"; then
+        rm -f "${file}.tmp"
+        error "pg_dump failed."
+    fi
+
+    if [ ! -s "${file}.tmp" ]; then
+        rm -f "${file}.tmp"
+        error "Backup file is empty."
+    fi
+
+    mv "${file}.tmp" "$file"
+    chmod 600 "$file"
+    log "Backup completed. The backup file is saved as '$file'."
+}
+
+cleanup_old_backups() {
+    log "Deleting backups older than ${RETENTION_DAYS} days from '$BACKUP_DIR'..."
+    find "$BACKUP_DIR" -name "${DATABASE_NAME}-*.dump" -type f -mtime +"$RETENTION_DAYS" -print -delete >> "$LOG_FILE" 2>&1
+    log "Retention cleanup done."
+}
+
+main() {
+    check_container
+    create_backup
+    cleanup_old_backups
+}
+
+main

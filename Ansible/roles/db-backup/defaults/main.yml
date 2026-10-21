@@ -1,0 +1,10 @@
+---
+db_container_name: postgres
+backup_dir: /var/backups/postgresql
+backup_retention_days: 7
+
+backup_script_path: /usr/local/sbin/pg_backup.sh
+restore_script_path: /usr/local/sbin/pg_restore.sh
+
+backup_cron_minute: "0"
+backup_cron_hour: "2"
