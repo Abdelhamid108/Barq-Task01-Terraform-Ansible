@@ -1,0 +1,7 @@
+---
+db_name: petclinic
+db_user: petclinic
+db_password: petclinic_password
+db_port: 5432
+db_data_dir: /data/postgres
+db_stack_dir: /opt/db_stack
