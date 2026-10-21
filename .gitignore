@@ -36,6 +36,10 @@ vault_pass*
 # ==========================================
 ansible/inventory/hosts.ini
 ansible/inventory/hosts.yml
+Ansible/inventory/hosts.ini
+Ansible/inventory/hosts.yml
+.ansible/
+Ansible/.ansible/
 *.retry
 
 # ==========================================

@@ -1,0 +1,1 @@
+# Docker role handlers, such as restarting the service after a configuration change, belong here.
