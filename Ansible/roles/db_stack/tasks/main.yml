@@ -1,0 +1,20 @@
+---
+- name: Ensure DB stack directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ db_stack_dir }}"
+    - "{{ db_data_dir }}"
+
+- name: Template DB docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ db_stack_dir }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Deploy DB stack using Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ db_stack_dir }}"
+    state: present
