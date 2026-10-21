@@ -12,13 +12,26 @@ resource "aws_vpc" "main" {
   }
 }
 
-resource "aws_subnet" "public" {
+# Public Subnet for App Host
+resource "aws_subnet" "app" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.subnet_cidr
+  cidr_block              = var.app_subnet_cidr
   map_public_ip_on_launch = true
 
   tags = {
-    Name      = "${var.project_name}-public-subnet"
+    Name      = "${var.project_name}-app-public-subnet"
+    ManagedBy = "terraform"
+  }
+}
+
+# Private Subnet for DB Host (No Public IP)
+resource "aws_subnet" "db" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.db_subnet_cidr
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name      = "${var.project_name}-db-private-subnet"
     ManagedBy = "terraform"
   }
 }
@@ -32,6 +45,7 @@ resource "aws_internet_gateway" "main" {
   }
 }
 
+# Public Route Table (App Subnet -> Internet Gateway)
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
@@ -46,9 +60,24 @@ resource "aws_route_table" "public" {
   }
 }
 
-resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.public.id
+resource "aws_route_table_association" "app_public" {
+  subnet_id      = aws_subnet.app.id
   route_table_id = aws_route_table.public.id
+}
+
+# Private Route Table for DB Subnet (Internal Traffic Only)
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name      = "${var.project_name}-private-rt"
+    ManagedBy = "terraform"
+  }
+}
+
+resource "aws_route_table_association" "db_private" {
+  subnet_id      = aws_subnet.db.id
+  route_table_id = aws_route_table.private.id
 }
 
 # --- Security Groups ---
