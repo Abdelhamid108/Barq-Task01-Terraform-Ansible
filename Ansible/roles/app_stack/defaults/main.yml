@@ -1,0 +1,9 @@
+---
+app_image: abdelhameed208/spring-petclinic:latest
+app_port: 8080
+app_stack_dir: /opt/app_stack
+db_host: "{{ hostvars['db01']['private_ip'] | default(groups['db_server'][0] | default(groups['db'][0] | default('10.0.2.10'))) }}"
+db_port: 5432
+db_name: "{{ vault_db_name | default('petclinic') }}"
+db_user: "{{ vault_db_user | default('petclinic') }}"
+db_password: "{{ vault_db_password | default('petclinic_password') }}"

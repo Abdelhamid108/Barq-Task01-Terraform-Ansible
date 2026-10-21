@@ -1,0 +1,37 @@
+---
+- name: Install and enable cron
+  ansible.builtin.apt:
+    name: cron
+    state: present
+    update_cache: true
+
+- name: Ensure cron is running
+  ansible.builtin.service:
+    name: cron
+    state: started
+    enabled: true
+
+- name: Create the PostgreSQL backup directory
+  ansible.builtin.file:
+    path: "{{ backup_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Backup and restore scripts
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/usr/local/sbin/{{ item }}"
+    mode: "0750"
+  loop:
+    - pg_backup.sh
+    - pg_restore.sh
+
+- name: Schedule the PostgreSQL backup
+  ansible.builtin.cron:
+    name: PostgreSQL database backup
+    user: root
+    minute: "{{ backup_cron_minute }}"
+    hour: "{{ backup_cron_hour }}"
+    job: "/usr/bin/flock -n /var/lock/pg_backup.lock {{ backup_script_path }}"

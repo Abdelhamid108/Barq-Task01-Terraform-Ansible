@@ -1,0 +1,13 @@
+---
+# Shared variables for all hosts
+
+# Database connection & credentials (mapped from Ansible Vault)
+db_name: "{{ vault_db_name }}"
+db_user: "{{ vault_db_user }}"
+db_password: "{{ vault_db_password }}"
+db_port: 5432
+
+# DB Backup parameters mapped to database credentials & container
+db_admin_user: "{{ db_user }}"
+app_db_name: "{{ db_name }}"
+db_container_name: postgres_db

@@ -1,0 +1,14 @@
+---
+- name: Verify the common role runs on a Debian-based host
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.os_family == "Debian"
+    fail_msg: "The common role currently supports Debian-based distributions only."
+
+- name: Install common Docker prerequisites and Git
+  ansible.builtin.apt:
+    name: "{{ common_packages }}"
+    update_cache: true
+    cache_valid_time: "{{ common_apt_cache_valid_time }}"
+    state: present
+

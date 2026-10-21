@@ -29,6 +29,9 @@ id_rsa*
 id_ed25519*
 .vault_pass
 vault_pass*
+Ansible/vault/.vault.txt
+.vault.txt
+*.vault.txt
 *.private
 
 # ==========================================
@@ -36,6 +39,10 @@ vault_pass*
 # ==========================================
 ansible/inventory/hosts.ini
 ansible/inventory/hosts.yml
+Ansible/inventory/hosts.ini
+Ansible/inventory/hosts.yml
+.ansible/
+Ansible/.ansible/
 *.retry
 
 # ==========================================

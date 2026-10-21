@@ -1,0 +1,15 @@
+# Docker role default variables belong here; callers can override these values.
+---
+
+# Edition and channel ('ce' for Community Edition, 'stable' release)
+docker_edition: 'ce'
+docker_apt_release_channel: 'stable'
+
+# package state for Docker installation (present/absent)
+docker_package_state: present
+
+# Service configuration
+docker_service_state: started
+
+docker_users:
+  - "{{ ansible_user | default('ubuntu') }}"

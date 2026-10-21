@@ -1,0 +1,8 @@
+---
+# Example unencrypted vault secrets file.
+# Copy to group_vars/all/vault.yml and encrypt using:
+#   ansible-vault encrypt group_vars/all/vault.yml
+
+vault_db_name: petclinic
+vault_db_user: petclinic
+vault_db_password: petclinic_password

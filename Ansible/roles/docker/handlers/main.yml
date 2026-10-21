@@ -1,0 +1,9 @@
+---
+
+# This handler is triggered by the 'install docker engine' task.
+- name: docker start and enable
+  ansible.builtin.service:
+    name: docker
+    state: "{{ docker_service_state }}"
+    enabled: true
+  listen: start_enable_docker

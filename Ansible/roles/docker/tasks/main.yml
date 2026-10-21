@@ -1,0 +1,46 @@
+---
+
+- name: Verify the role runs on a Debian-based host
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.os_family == "Debian"
+    fail_msg: "The Docker role currently supports Debian-based distributions only."
+
+# Create directory for storing GPG keys securely
+- name: Create directory for Docker GPG keyrings (Ubuntu)
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+# Download Docker's official GPG key
+- name: Download the Docker GPG key
+  ansible.builtin.get_url:
+    url: "{{ docker_gpg_key_url }}"
+    dest: "{{ docker_keyring_path }}"
+    mode: "0644"
+
+# Add Docker repository to apt sources
+- name: Add the Docker repository to Apt sources
+  ansible.builtin.apt_repository:
+    repo: "{{ docker_repo_url }}"
+    filename: docker
+    state: present
+    update_cache: true
+
+# Install Docker Engine and related plugins
+- name: install docker engine
+  ansible.builtin.package:
+    name: "{{ docker_packages }}"
+    state: "{{ docker_package_state }}"
+  notify: docker start and enable
+
+
+# Add the current ansible user to the 'docker' group
+# This allows running docker commands without 'sudo'
+- name: add ansible user for Docker group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  loop: "{{ docker_users }}"

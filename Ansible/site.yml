@@ -1,0 +1,31 @@
+# Main playbook: define target hosts and include the roles that configure them.
+---
+- name: setup and install common packages
+  hosts: all
+  become: yes
+  roles:
+    - common
+
+- name: install docker
+  hosts: all
+  become: yes
+  roles:
+    - docker
+
+- name: deploy database
+  hosts: db
+  become: yes
+  roles:
+    - db_stack
+
+- name: deploy application
+  hosts: app
+  become: yes
+  roles:
+    - app_stack
+
+- name: backup data
+  hosts: db
+  become: yes
+  roles:
+    - db_backup

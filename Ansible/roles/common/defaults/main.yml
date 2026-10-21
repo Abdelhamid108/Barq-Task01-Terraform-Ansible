@@ -1,0 +1,13 @@
+---
+# Packages required before installing Docker, plus the shared Git client.
+common_packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - apt-transport-https
+  - git
+
+# Avoid refreshing the APT package index on every playbook run.
+common_apt_cache_valid_time: 3600
+common_apt_cache_retries: 5
+common_apt_cache_retry_max_delay: 12
