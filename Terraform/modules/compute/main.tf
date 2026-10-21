@@ -1,6 +1,6 @@
 data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["099720109477"]  
+  owners      = ["099720109477"]
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
@@ -14,7 +14,7 @@ resource "aws_key_pair" "deployer" {
 
 resource "aws_instance" "app" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.instance_type
+  instance_type          = var.app_instance_type
   subnet_id              = var.public_subnet_id
   vpc_security_group_ids = [var.app_sg_id]
   key_name               = aws_key_pair.deployer.key_name
@@ -29,8 +29,8 @@ resource "aws_instance" "app" {
 
 resource "aws_instance" "db" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.private_instance_type
-  subnet_id              = var.subnet_id
+  instance_type          = var.db_instance_type
+  subnet_id              = var.private_subnet_id
   vpc_security_group_ids = [var.db_sg_id]
   key_name               = aws_key_pair.deployer.key_name
 
@@ -47,7 +47,7 @@ resource "aws_ebs_volume" "db_data" {
   size              = var.db_volume_gb
   type              = "gp3"
   encrypted         = true
-  tags = { Name = "${var.project_name}-db-data" }
+  tags              = { Name = "${var.project_name}-db-data" }
 }
 
 resource "aws_volume_attachment" "db_data" {
