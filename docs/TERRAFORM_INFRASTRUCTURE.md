@@ -10,7 +10,7 @@ This document outlines the Terraform architecture, module hierarchy, network top
 Terraform/
 ├── main.tf                 # Root module wiring network, compute, and inventory generation
 ├── outputs.tf              # Active IP endpoints and application URLs
-├── providers.tf            # AWS provider (~> 5.0), Local provider (~> 2.4), S3 state backend
+├── providers.tf            # AWS provider (~> 6.70.0), Local provider (~> 2.9), S3 state backend
 ├── terraform.auto.tfvars   # Automatically generated operator IP tfvars (Git-ignored)
 ├── terraform.tfvars        # Active variable overrides (Git-ignored)
 ├── terraform.tfvars.example # Sample variable configuration template

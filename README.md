@@ -239,7 +239,10 @@ The DB instance is inside a private subnet and accessible via the App server:
 # Get DB Private IP
 DB_IP=$(cd Terraform && terraform output -raw db_private_ip)
 
-# Connect through proxy jump
+# Option A: Connect using SSH ProxyJump (-J)
+ssh -i ~/.ssh/barq-task01 -J ubuntu@"${APP_IP}" ubuntu@"${DB_IP}"
+
+# Option B: Connect using ProxyCommand
 ssh -i ~/.ssh/barq-task01 \
     -o ProxyCommand="ssh -i ~/.ssh/barq-task01 -W %h:%p -q ubuntu@${APP_IP}" \
     ubuntu@"${DB_IP}"
@@ -265,20 +268,22 @@ SSH into the DB instance (or use Ansible) and run:
 sudo /usr/local/sbin/pg_backup.sh
 ```
 
-Verify the generated dump:
+Verify the generated dump and logs (requires `sudo` due to `0750` directory permissions):
 ```bash
-ls -lh /var/backups/postgresql/
-cat /var/backups/postgresql/backup.log
+sudo ls -lh /var/backups/postgresql/
+sudo cat /var/backups/postgresql/backup.log
 ```
 
 ### 3. Restoring the Database
 The restore utility `/usr/local/sbin/pg_restore.sh` safely restores dumps into the PostgreSQL container:
 
 ```bash
-# Syntax: /usr/local/sbin/pg_restore.sh [--yes] /path/to/backup.dump
-sudo /usr/local/sbin/pg_restore.sh /var/backups/postgresql/petclinic-YYYYMMDD-HHMMSS.dump
+# Identify the latest backup file:
+LATEST_BACKUP=$(sudo ls -t /var/backups/postgresql/petclinic-*.dump | head -n 1)
+
+# Execute restore (use --yes to bypass interactive prompt):
+sudo /usr/local/sbin/pg_restore.sh --yes "$LATEST_BACKUP"
 ```
-*(Use `--yes` to bypass interactive confirmation)*.
 
 ---
 
