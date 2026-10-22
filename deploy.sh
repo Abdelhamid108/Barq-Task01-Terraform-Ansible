@@ -32,10 +32,11 @@ cd ..
 
 # 4. Wait for SSH availability & cloud-init completion
 echo "==> [4/5] Waiting for SSH access on App server (${APP_PUBLIC_IP})..."
-until ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 -i ~/.ssh/id_rsa ubuntu@"${APP_PUBLIC_IP}" "echo SSH Ready" >/dev/null 2>&1; do
+until ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=5 -i ~/.ssh/barq-task01 ubuntu@"${APP_PUBLIC_IP}" "echo SSH Ready" >/dev/null 2>&1; do
   echo "    Waiting for EC2 instance initialization..."
   sleep 5
 done
+
 
 # 5. Install Ansible collections and run site playbook
 echo "==> [5/5] Installing Ansible requirements and executing playbook..."
