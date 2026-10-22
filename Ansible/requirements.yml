@@ -3,7 +3,14 @@
 collections:
   - name: community.docker
     version: ">=3.10.0"
+<<<<<<< HEAD
 
   - name: community.general
   
   - name: ansible.posix
+=======
+  - name: community.general
+    version: ">=8.0.0"
+  - name: ansible.posix
+    version: ">=1.5.0"
+>>>>>>> 8c83db538ba7121a9114a911b43128e253ba2678

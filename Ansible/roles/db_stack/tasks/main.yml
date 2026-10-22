@@ -1,4 +1,16 @@
 ---
+- name: Ensure filesystem exists on attached EBS data volume
+  community.general.filesystem:
+    fstype: ext4
+    dev: /dev/nvme1n1
+
+- name: Mount EBS volume to database data directory
+  ansible.posix.mount:
+    path: "{{ db_data_dir }}"
+    src: /dev/nvme1n1
+    fstype: ext4
+    state: mounted
+
 - name: Ensure DB stack directories exist
   ansible.builtin.file:
     path: "{{ item }}"
