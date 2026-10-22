@@ -301,6 +301,17 @@ This cleans up:
 
 ---
 
+## Known Limitations
+
+* **No Custom DNS Routing:** The application is accessed directly via raw public IP (`http://<APP_PUBLIC_IP>`) rather than a custom domain name mapped via Amazon Route 53 or an external DNS provider.
+* **App Host Dual-Purposed as Jump Server:** SSH access to the private database EC2 relies on the public App host acting as a jump host (via Ansible `ProxyCommand` / SSH ProxyJump) rather than using a dedicated management Bastion host or AWS Client VPN.
+* **Local Backup Storage (No S3 Offloading):** Database `.dump` files are stored locally on the DB host (`/var/backups/postgresql/`). A production pipeline would automatically upload compressed backups to an offsite Amazon S3 bucket with lifecycle policies.
+* **Single Availability Zone & No High Availability (HA):** Both App and DB instances reside in a single AZ without Auto Scaling Groups or Multi-AZ database replication.
+* **Unencrypted HTTP Traffic (No TLS/HTTPS):** Nginx serves traffic over plain HTTP on port 80 without SSL/TLS certificates (e.g., Let's Encrypt or AWS ACM).
+* **EBS Teardown on Destroy:** Executing `terraform destroy` deletes the EC2 instances, the attached 10GB EBS volume, and all locally stored database backups.
+
+---
+
 ## References & Attributions
 
 ### Technical Documentation
@@ -311,4 +322,3 @@ This cleans up:
 ### AI Tooling & Assisted Development
 - **Claude**: Architectural planning, system design structuring, and solution workflow.
 - **Codex / Google Antigravity**: Code syntax formatting, live manual test execution, troubleshooting diagnostics, and markdown documentation generation.
-
