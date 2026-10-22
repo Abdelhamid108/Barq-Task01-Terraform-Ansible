@@ -1,6 +1,7 @@
 ---
 app_image: "abdelhameed208/spring-petclinic@sha256:0f7855aa67618347805cc8335d222a3b70223adfa451d373598d36fcb1438c3f"
-nginx_image: "nginx:1.31.8-alpine3.24"
+nginx_image: "nginx:1.31-alpine3.24"
+
 
 app_port: 8080
 app_stack_dir: /opt/app_stack
