@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=================================================="
+HEADER_BORDER="=================================================="
+
+echo "${HEADER_BORDER}"
 echo " Starting End-to-End AWS & Ansible Deployment"
-echo "=================================================="
+echo "${HEADER_BORDER}"
 
 # 1. Check required tools
 echo "==> [1/5] Verifying local CLI prerequisites..."
@@ -13,18 +15,18 @@ command -v ansible-playbook >/dev/null 2>&1 || { echo "[ERROR] ansible-playbook 
 # 2. Detect operator public IP for SSH ingress rule
 echo "==> [2/5] Detecting current public IP for SSH security rule..."
 MY_IP=$(curl -s https://checkip.amazonaws.com || curl -s https://ifconfig.me)
-if [ -z "$MY_IP" ]; then
+if [[ -z "$MY_IP" ]]; then
   echo "[ERROR] Could not detect public IP address." >&2
   exit 1
 fi
 echo "Detected Public IP: ${MY_IP}"
-export TF_VAR_ssh_allowed_cidr="${MY_IP}/32"
+ALLOWED_CIDR="${MY_IP}/32"
 
 # 3. Apply Terraform Infrastructure
 echo "==> [3/5] Initializing and applying Terraform infrastructure..."
 cd Terraform
 terraform init
-terraform apply -auto-approve
+terraform apply -auto-approve -var="ssh_allowed_cidr=${ALLOWED_CIDR}"
 APP_PUBLIC_IP=$(terraform output -raw app_public_ip)
 cd ..
 
@@ -42,7 +44,7 @@ ansible-galaxy collection install -r requirements.yml
 ansible-playbook site.yml
 cd ..
 
-echo "=================================================="
+echo "${HEADER_BORDER}"
 echo " Deployment Successfully Completed!"
-echo " Access Spring Petclinic at: http://${APP_PUBLIC_IP}"
-echo "=================================================="
+echo " Access Spring Petclinic at port 80: ${APP_PUBLIC_IP}"
+echo "${HEADER_BORDER}"
