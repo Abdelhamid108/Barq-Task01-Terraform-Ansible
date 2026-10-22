@@ -59,7 +59,6 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 ### Key Highlights:
 * **Dual-Stack Binding**: Listens on both `80` (IPv4) and `[::]:80` (IPv6) to prevent Alpine Linux DNS resolution issues.
 * **Header Forwarding**: Passes `Host`, `X-Real-IP`, `X-Forwarded-For`, and `X-Forwarded-Proto` to preserve client identity in Spring logs.
-* **Lightweight `/health` Endpoint**: Returns a direct HTTP 200 `healthy` response without forwarding traffic to the backend, enabling fast health checks without JVM overhead.
 * **Mount Security**: Mounted into the Nginx container as read-only (`:ro`).
 
 ---

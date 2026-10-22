@@ -4,6 +4,16 @@ The stack utilizes **Terraform** for infrastructure provisioning (VPC, Subnets, 
 
 ---
 
+## Documentation Index
+
+| Document | Focus & Description |
+| :--- | :--- |
+| [`docs/TERRAFORM_INFRASTRUCTURE.md`](docs/TERRAFORM_INFRASTRUCTURE.md) | Terraform module architecture, VPC networking, security groups, and dynamic inventory generation. |
+| [`docs/ANSIBLE_CONFIGURATION.md`](docs/ANSIBLE_CONFIGURATION.md) | Ansible role structure, playbook execution sequence, Vault setup, and disaster recovery. |
+| [`docs/APPLICATION_AND_CONTAINERS.md`](docs/APPLICATION_AND_CONTAINERS.md) | Spring PetClinic upstream codebase, Dockerfile build specs, Nginx reverse proxy, and Compose templates. |
+
+---
+
 ## Architecture Overview
 
 
@@ -290,3 +300,15 @@ This cleans up:
 - Generated `hosts.ini` and `terraform.auto.tfvars`
 
 ---
+
+## References & Attributions
+
+### Technical Documentation
+- [Docs overview | hashicorp/aws | Terraform | Terraform Registry](https://registry.terraform.io/providers/hashicorp/aws/latest/docs) - Official Terraform AWS provider resource reference.
+- [Ansible Official Documentation](https://docs.ansible.com/) - Core playbooks, module specifications, and configuration guides.
+- [Spring PetClinic Sample Application](https://github.com/spring-projects/spring-petclinic) - Upstream source code repository for the Spring Boot reference app.
+
+### AI Tooling & Assisted Development
+- **Claude**: Architectural planning, system design structuring, and solution workflow.
+- **Codex / Google Antigravity**: Code syntax formatting, live manual test execution, troubleshooting diagnostics, and markdown documentation generation.
+
