@@ -12,10 +12,19 @@ resource "aws_vpc" "main" {
   }
 }
 
+data "aws_availability_zones" "available" {
+  state = "available"
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
+
 # Public Subnet for App Host
 resource "aws_subnet" "app" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.app_subnet_cidr
+  availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
 
   tags = {
@@ -28,6 +37,7 @@ resource "aws_subnet" "app" {
 resource "aws_subnet" "db" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.db_subnet_cidr
+  availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = false
 
   tags = {

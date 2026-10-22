@@ -9,6 +9,7 @@ module "network" {
   ssh_allowed_cidr = var.ssh_allowed_cidr
 }
 
+
 module "compute" {
   source            = "./modules/compute"
   project_name      = var.project_name

@@ -1,10 +1,12 @@
 ## terraform.tfvars.example
 
-project_name     = "barq-task"
-aws_region       = "eu-central-1"
-ssh_allowed_cidr = "203.0.113.10/32"
-app_instance_type = "t3.micro"
-db_instance_type  = "t3.micro"
-public_key_path  = "~/.ssh/id_rsa.pub"
-private_key_path = "~/.ssh/id_rsa"
+project_name      = "barq-task"
+aws_region        = "us-east-1"
+ssh_allowed_cidr  = "203.0.113.10/32"
+app_instance_type = "t3.small"
+db_instance_type  = "t3.small"
+public_key_path   = "~/.ssh/id_rsa.pub"
+private_key_path  = "~/.ssh/id_rsa"
 db_volume_gb      = 10
+
+
